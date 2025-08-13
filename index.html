@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Digit Span Trainer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #f3f4f6;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        .container {
+            max-width: 32rem;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 1.875rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #1f2937;
+        }
+
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .space-y-6 > * + * {
+            margin-top: 1.5rem;
+        }
+
+        .space-y-4 > * + * {
+            margin-top: 1rem;
+        }
+
+        .space-y-2 > * + * {
+            margin-top: 0.5rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .font-bold {
+            font-weight: bold;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+        }
+
+        .text-6xl {
+            font-size: 4rem;
+        }
+
+        .text-8xl {
+            font-size: 6rem;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .btn-small {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background-color: #d1d5db;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-small:hover {
+            background-color: #9ca3af;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .difficulty-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            background-color: #e5e7eb;
+            transition: background-color 0.2s;
+        }
+
+        .difficulty-btn:hover {
+            background-color: #d1d5db;
+        }
+
+        .difficulty-btn.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .display-time-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .digit-display {
+            width: 12rem;
+            height: 12rem;
+            background-color: #f97316;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .digit-text {
+            color: white;
+            font-size: 5rem;
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+
+        .digit-text.fading {
+            opacity: 0;
+        }
+
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            max-width: 18rem;
+            margin: 0 auto;
+        }
+
+        .numpad-btn {
+            width: 4rem;
+            height: 4rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .numpad-btn:hover {
+            background-color: #2563eb;
+        }
+
+        .numpad-btn.backspace {
+            background-color: #ef4444;
+            grid-column: span 2;
+            font-size: 0.875rem;
+        }
+
+        .numpad-btn.backspace:hover {
+            background-color: #dc2626;
+        }
+
+        .user-input {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background-color: #f3f4f6;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            min-height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feedback-digits {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .feedback-digit {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .feedback-digit.correct {
+            background-color: #10b981;
+        }
+
+        .feedback-digit.incorrect {
+            background-color: #ef4444;
+        }
+
+        .countdown-number {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #3b82f6;
+            margin: 1rem 0;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        input[type="checkbox"] {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .text-gray-600 {
+            color: #4b5563;
+        }
+
+        .text-gray-500 {
+            color: #6b7280;
+        }
+
+        .text-green-600 {
+            color: #059669;
+        }
+
+        .text-blue-500 {
+            color: #3b82f6;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .rules-list {
+            text-align: left;
+            color: #374151;
+        }
+
+        .progress-info {
+            color: #4b5563;
+            margin-bottom: 1.5rem;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Advanced Digit Span Trainer</h1>
+
+        <!-- Menu Screen -->
+        <div id="menu-screen" class="text-center space-y-6">
+            <div class="card">
+                <h2 class="text-xl font-bold mb-4">Game Rules</h2>
+                <div class="rules-list space-y-2 text-sm">
+                    <p>• Always remember the <strong>first number</strong></p>
+                    <p>• For each next number, remember it <strong>only if it's greater than the previous number</strong></p>
+                    <p>• The target count shows how many numbers you need to remember after applying the rule</p>
+                    <p>• No consecutive identical numbers allowed (no 4→4 or 6→6)</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="text-lg font-bold mb-4">Settings</h3>
+                
+                <div class="mb-4">
+                    <label class="mb-2 font-bold">Display Time per Number</label>
+                    <div class="display-time-controls">
+                        <button class="btn-small" onclick="adjustDisplayTime(-0.25)">-</button>
+                        <span class="text-lg font-bold" id="display-time">1.00s</span>
+                        <button class="btn-small" onclick="adjustDisplayTime(0.25)">+</button>
+                    </div>
+                </div>
+
+                <div class="mb-4" id="difficulty-section">
+                    <label class="mb-2 font-bold">Difficulty</label>
+                    <div class="difficulty-buttons">
+                        <button class="difficulty-btn active" data-difficulty="easy" onclick="setDifficulty('easy')">Easy</button>
+                        <button class="difficulty-btn" data-difficulty="medium" onclick="setDifficulty('medium')">Medium</button>
+                        <button class="difficulty-btn" data-difficulty="hard" onclick="setDifficulty('hard')">Hard</button>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="all-in-one-mode" onchange="toggleAllInOneMode()">
+                        <span>All-in-One Challenge Mode (Easy → Medium → Hard)</span>
+                    </label>
+                </div>
+
+                <button class="btn btn-success w-full" onclick="startGame()">
+                    <span>▶</span>
+                    <span id="start-button-text">Start Training</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Countdown Screen -->
+        <div id="countdown-screen" class="text-center hidden">
+            <div class="card">
+                <h2 class="text-2xl font-bold mb-4">Get Ready!</h2>
+                <div class="countdown-number" id="countdown-number">3</div>
+                <p class="text-gray-600">
+                    Next sequence starting... Target: <span id="countdown-target">4</span> numbers to remember
+                </p>
+            </div>
+        </div>
+
+        <!-- Showing Digits Screen -->
+        <div id="showing-screen" class="text-center space-y-8 hidden">
+            <div class="card">
+                <h2 class="text-xl font-bold mb-4">
+                    <span id="game-info">Difficulty: Easy | Round: 1 | Target: 4 numbers</span>
+                </h2>
+                <p class="text-gray-600 mb-6">
+                    Remember: First number + numbers greater than the previous
+                </p>
+                <div class="digit-display">
+                    <span class="digit-text" id="current-digit">5</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Screen -->
+        <div id="input-screen" class="text-center space-y-6 hidden">
+            <div class="card">
+                <div class="mb-6">
+                    <label class="mb-2 font-bold">Enter remembered numbers:</label>
+                    <div class="user-input" id="user-input">Enter numbers...</div>
+                    <p class="text-sm text-gray-500 mt-2">Time left: <span id="time-left">10</span>s</p>
+                </div>
+                <div class="numpad">
+                    <button class="numpad-btn" onclick="handleNumpadInput(1)">1</button>
+                    <button class="numpad-btn" onclick="handleNumpadInput(2)">2</button>
+                    <button class="numpad-btn" onclick="handleNumpadInput(3)">3</button>
+                    <button class="numpad-btn" onclick="handleNumpadInput(4)">4</button>
+                    <button class="numpad-btn" onclick="handleNumpadInput(5)">5</button>
+                    <button class="numpad-btn" onclick="handleNumpadInput(6)">6</button>
+                    <button class="numpad-btn" onclick="handleNumpadInput(7)">7</button>
+                    <button class="numpad-btn" onclick="handleNumpadInput(8)">8</button>
+                    <button class="numpad-btn" onclick="handleNumpadInput(9)">9</button>
+                    <button class="numpad-btn" onclick="handleNumpadInput(0)">0</button>
+                    <button class="numpad-btn backspace" onclick="handleBackspace()">⌫</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Screen -->
+        <div id="feedback-screen" class="text-center hidden">
+            <div class="card">
+                <h3 class="text-xl font-bold mb-4">Results</h3>
+                <div class="mb-4">
+                    <p class="mb-2">Original sequence: <span id="original-sequence"></span></p>
+                    <p class="mb-2">Correct answer: <span id="correct-answer"></span></p>
+                    <p class="mb-4">Your answer: <span id="your-answer"></span></p>
+                </div>
+                
+                <div class="feedback-digits" id="feedback-digits"></div>
+                
+                <p class="text-gray-500 text-sm mt-4">
+                    Next round starts automatically in 5 seconds...
+                </p>
+            </div>
+        </div>
+
+        <!-- Completed Screen -->
+        <div id="completed-screen" class="text-center hidden">
+            <div class="card">
+                <h2 class="text-2xl font-bold text-green-600 mb-4">
+                    🎉 All-in-One Challenge Completed!
+                </h2>
+                <p class="text-gray-600 mb-6">
+                    Congratulations! You've completed all difficulty levels.
+                </p>
+                <button class="btn btn-primary" onclick="resetGame()">
+                    <span>↻</span>
+                    <span>Play Again</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Back to Menu Button (shown during game) -->
+        <div id="back-to-menu" class="text-center mt-6 hidden">
+            <button class="btn btn-secondary" onclick="resetGame()">
+                <span>↻</span>
+                <span>Back to Menu</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = 'menu';
+        let difficulty = 'easy';
+        let allInOneMode = false;
+        let currentSequence = [];
+        let filteredSequence = [];
+        let userInput = '';
+        let displayTime = 1.0;
+        let isDigitFading = false;
+        let roundsCompleted = 0;
+        let currentSequenceLength = 4;
+        let currentDigitIndex = 0;
+        let timeLeft = 0;
+        let countdown = 3;
+        let feedback = { correct: [], incorrect: [] };
+
+        // Timers
+        let gameTimer = null;
+        let inputTimer = null;
+        let countdownTimer = null;
+
+        // Difficulty configurations
+        const difficultyConfig = {
+            easy: { start: 4, maxRounds: 3, answerTime: 7, progression: [4, 5, 6] },
+            medium: { start: 7, maxRounds: 3, answerTime: 10, progression: [7, 8] },
+            hard: { start: 9, maxRounds: 3, answerTime: 12, progression: [9, 10] }
+        };
+
+        // Utility functions
+        function hideAllScreens() {
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('countdown-screen').classList.add('hidden');
+            document.getElementById('showing-screen').classList.add('hidden');
+            document.getElementById('input-screen').classList.add('hidden');
+            document.getElementById('feedback-screen').classList.add('hidden');
+            document.getElementById('completed-screen').classList.add('hidden');
+            document.getElementById('back-to-menu').classList.add('hidden');
+        }
+
+        function showScreen(screenId) {
+            hideAllScreens();
+            document.getElementById(screenId).classList.remove('hidden');
+            
+            if (screenId !== 'menu-screen') {
+                document.getElementById('back-to-menu').classList.remove('hidden');
+            }
+        }
+
+        function clearAllTimers() {
+            if (gameTimer) clearTimeout(gameTimer);
+            if (inputTimer) clearInterval(inputTimer);
+            if (countdownTimer) clearInterval(countdownTimer);
+        }
+
+        // Sequence filtering and generation
+        function filterSequence(sequence) {
+            if (sequence.length === 0) return [];
+            
+            const filtered = [sequence[0]];
+            
+            for (let i = 1; i < sequence.length; i++) {
+                if (sequence[i] > sequence[i - 1]) {
+                    filtered.push(sequence[i]);
+                }
+            }
+            
+            return filtered;
+        }
+
+        function constructTargetSequence(targetMemoryCount) {
+            const sequence = [];
+            let filteredCount = 0;
+            
+            const firstNumber = 1 + Math.floor(Math.random() * 9);
+            sequence.push(firstNumber);
+            filteredCount++;
+            
+            let lastNumber = firstNumber;
+            
+            while (filteredCount < targetMemoryCount) {
+                const availableNumbers = [];
+                for (let i = lastNumber + 1; i <= 9; i++) {
+                    availableNumbers.push(i);
+                }
+                
+                if (availableNumbers.length === 0) {
+                    const newBase = 1 + Math.floor(Math.random() * Math.min(9, 10 - (targetMemoryCount - filteredCount)));
+                    sequence.push(newBase);
+                    lastNumber = newBase;
+                    continue;
+                }
+                
+                const nextRemembered = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
+                sequence.push(nextRemembered);
+                lastNumber = nextRemembered;
+                filteredCount++;
+                
+                const fillerCount = Math.floor(Math.random() * 3);
+                for (let i = 0; i < fillerCount; i++) {
+                    const availableFillers = [];
+                    const maxFiller = Math.max(1, lastNumber);
+                    for (let j = 1; j < maxFiller; j++) {
+                        availableFillers.push(j);
+                    }
+                    
+                    if (availableFillers.length > 0) {
+                        const filler = availableFillers[Math.floor(Math.random() * availableFillers.length)];
+                        sequence.push(filler);
+                    }
+                }
+            }
+            
+            const finalFillerCount = Math.floor(Math.random() * 3) + 1;
+            for (let i = 0; i < finalFillerCount; i++) {
+                const availableFillers = [];
+                const maxFiller = Math.max(1, lastNumber);
+                for (let j = 1; j < maxFiller; j++) {
+                    availableFillers.push(j);
+                }
+                
+                if (availableFillers.length > 0) {
+                    const filler = availableFillers[Math.floor(Math.random() * availableFillers.length)];
+                    sequence.push(filler);
+                }
+            }
+            
+            return sequence;
+        }
+
+        function generateSequence(targetMemoryCount) {
+            let attempts = 0;
+            const maxAttempts = 1000;
+            
+            function hasNoConsecutiveRepeats(sequence) {
+                for (let i = 1; i < sequence.length; i++) {
+                    if (sequence[i] === sequence[i - 1]) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            
+            while (attempts < maxAttempts) {
+                const baseLength = Math.max(targetMemoryCount + 2, Math.floor(targetMemoryCount * 1.8));
+                const sequence = [];
+                
+                sequence.push(1 + Math.floor(Math.random() * 9));
+                
+                for (let i = 1; i < baseLength; i++) {
+                    let nextNumber;
+                    do {
+                        nextNumber = Math.floor(Math.random() * 10);
+                    } while (nextNumber === sequence[i - 1]);
+                    
+                    sequence.push(nextNumber);
+                }
+                
+                const filtered = filterSequence(sequence);
+                
+                if (filtered.length === targetMemoryCount && hasNoConsecutiveRepeats(sequence)) {
+                    return sequence;
+                }
+                
+                attempts++;
+            }
+            
+            return constructTargetSequence(targetMemoryCount);
+        }
+
+        // UI handlers
+        function adjustDisplayTime(delta) {
+            displayTime = Math.max(0.25, Math.min(3.0, displayTime + delta));
+            document.getElementById('display-time').textContent = displayTime.toFixed(2) + 's';
+        }
+
+        function setDifficulty(diff) {
+            difficulty = diff;
+            currentSequenceLength = difficultyConfig[difficulty].start;
+            roundsCompleted = 0;
+            
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-difficulty="${diff}"]`).classList.add('active');
+        }
+
+        function toggleAllInOneMode() {
+            allInOneMode = document.getElementById('all-in-one-mode').checked;
+            const difficultySection = document.getElementById('difficulty-section');
+            const startButtonText = document.getElementById('start-button-text');
+            
+            if (allInOneMode) {
+                difficultySection.classList.add('hidden');
+                startButtonText.textContent = 'Start All-in-One Challenge';
+                setDifficulty('easy');
+            } else {
+                difficultySection.classList.remove('hidden');
+                startButtonText.textContent = 'Start Training';
+            }
+        }
+
+        function handleNumpadInput(digit) {
+            if (gameState === 'input') {
+                userInput += digit;
+                updateUserInputDisplay();
+            }
+        }
+
+        function handleBackspace() {
+            if (gameState === 'input') {
+                userInput = userInput.slice(0, -1);
+                updateUserInputDisplay();
+            }
+        }
+
+        function updateUserInputDisplay() {
+            const display = document.getElementById('user-input');
+            display.textContent = userInput || 'Enter numbers...';
+        }
+
+        // Game flow functions
+        function startGame() {
+            if (allInOneMode) {
+                setDifficulty('easy');
+            }
+            gameState = 'countdown';
+            countdown = 3;
+            showScreen('countdown-screen');
+            startCountdown();
+        }
+
+        function startCountdown() {
+            document.getElementById('countdown-number').textContent = countdown;
+            document.getElementById('countdown-target').textContent = currentSequenceLength;
+            
+            countdownTimer = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    document.getElementById('countdown-number').textContent = countdown;
+                } else {
+                    clearInterval(countdownTimer);
+                    startRound();
+                }
+            }, 1000);
+        }
+
+        function startRound() {
+            const sequence = generateSequence(currentSequenceLength);
+            const filtered = filterSequence(sequence);
+            
+            currentSequence = sequence;
+            filteredSequence = filtered;
+            userInput = '';
+            currentDigitIndex = 0;
+            isDigitFading = false;
+            gameState = 'showing';
+            
+            showScreen('showing-screen');
+            updateGameInfo();
+            showSequence();
+        }
+
+        function updateGameInfo() {
+            const info = `Difficulty: ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} | Round: ${roundsCompleted + 1} | Target: ${currentSequenceLength} numbers`;
+            document.getElementById('game-info').textContent = info;
+        }
+
+        function showSequence() {
+            if (currentDigitIndex < currentSequence.length) {
+                const digitElement = document.getElementById('current-digit');
+                digitElement.textContent = currentSequence[currentDigitIndex];
+                digitElement.classList.remove('fading');
+                
+                const fadeStartTime = displayTime * 0.75 * 1000;
+                const totalTime = displayTime * 1000;
+                
+                setTimeout(() => {
+                    digitElement.classList.add('fading');
+                }, fadeStartTime);
+                
+                setTimeout(() => {
+                    currentDigitIndex++;
+                    showSequence();
+                }, totalTime);
+            } else {
+                startInputPhase();
+            }
+        }
+
+        function startInputPhase() {
+            gameState = 'input';
+            timeLeft = difficultyConfig[difficulty].answerTime;
+            showScreen('input-screen');
+            updateUserInputDisplay();
+            startInputTimer();
+        }
+
+        function startInputTimer() {
+            document.getElementById('time-left').textContent = timeLeft;
+            
+            inputTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('time-left').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(inputTimer);
+                    evaluateAnswer();
+                }
+            }, 1000);
+        }
+
+        function evaluateAnswer() {
+            clearInterval(inputTimer);
+            
+            const userDigits = userInput.split('').map(d => parseInt(d)).filter(d => !isNaN(d));
+            const correctDigits = filteredSequence;
+            
+            gameState = 'feedback';
+            showScreen('feedback-screen');
+            
+            // Update feedback display
+            document.getElementById('original-sequence').textContent = currentSequence.join(' ');
+            document.getElementById('correct-answer').textContent = filteredSequence.join(' ');
+            document.getElementById('your-answer').textContent = userInput || '(empty)';
+            
+            // Show feedback digits
+            const feedbackContainer = document.getElementById('feedback-digits');
+            feedbackContainer.innerHTML = '';
+            
+            const maxLength = Math.max(userDigits.length, correctDigits.length);
+            
+            for (let i = 0; i < maxLength; i++) {
+                const userDigit = i < userDigits.length ? userDigits[i] : null;
+                const correctDigit = i < correctDigits.length ? correctDigits[i] : null;
+                const isCorrect = userDigit === correctDigit && userDigit !== null;
+                
+                const digitElement = document.createElement('div');
+                digitElement.className = `feedback-digit ${isCorrect ? 'correct' : 'incorrect'}`;
+                digitElement.textContent = userDigit !== null ? userDigit : '?';
+                feedbackContainer.appendChild(digitElement);
+            }
+            
+            // Schedule next round
+            setTimeout(() => {
+                const newRoundsCompleted = roundsCompleted + 1;
+                roundsCompleted = newRoundsCompleted;
+                
+                const config = difficultyConfig[difficulty];
+                if (newRoundsCompleted % config.maxRounds === 0) {
+                    const currentProgressionIndex = Math.floor((newRoundsCompleted - 1) / config.maxRounds);
+                    if (currentProgressionIndex + 1 < config.progression.length) {
+                        currentSequenceLength = config.progression[currentProgressionIndex + 1];
+                    } else if (allInOneMode) {
+                        if (difficulty === 'easy') {
+                            setDifficulty('medium');
+                            roundsCompleted = 0;
+                        } else if (difficulty === 'medium') {
+                            setDifficulty('hard');
+                            roundsCompleted = 0;
+                        } else {
+                            gameState = 'completed';
+                            showScreen('completed-screen');
+                            return;
+                        }
+                    }
+                }
+                
+                gameState = 'countdown';
+                countdown = 3;
+                showScreen('countdown-screen');
+                startCountdown();
+            }, 5000);
+        }
+
+        function resetGame() {
+            clearAllTimers();
+            gameState = 'menu';
+            roundsCompleted = 0;
+            currentSequenceLength = difficultyConfig[difficulty].start;
+            userInput = '';
+            allInOneMode = false;
+            
+            document.getElementById('all-in-one-mode').checked = false;
+            toggleAllInOneMode();
+            
+            showScreen('menu-screen');
+        }
+
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            showScreen('menu-screen');
+        });
+
+        // Keyboard support
+        document.addEventListener('keydown', function(event) {
+            if (gameState === 'input') {
+                if (event.key >= '0' && event.key <= '9') {
+                    handleNumpadInput(parseInt(event.key));
+                } else if (event.key === 'Backspace') {
+                    event.preventDefault();
+                    handleBackspace();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
